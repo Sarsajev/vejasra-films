@@ -28,8 +28,7 @@ const EMAIL = "office@vejasra-films.com";
 const PHONE = "+43 660 137157";
 const WHATSAPP_URL = "https://wa.me/4368110376116?text=Hallo%20Vejasra%20Films%2C%20ich%20habe%20eine%20Projektanfrage.";
 const INSTAGRAM_URL = "https://instagram.com/vejasrafilms";
-// TODO: Link zur Terminbuchung (z. B. Calendly) hier eintragen – solange leer, erscheint ein Hinweis.
-const BOOKING_URL = "";
+const BOOKING_URL = "https://cal.com/vejasra-films/15min";
 // TODO: Web3Forms Access Key eintragen (web3forms.com)
 const WEB3FORMS_ACCESS_KEY = "HIER_KEY_EINTRAGEN";
 
@@ -78,10 +77,6 @@ function Index() {
   const [legal, setLegal] = useState<"impressum" | "datenschutz" | null>(null);
   const [toast, setToast] = useState("");
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(""), 4500); };
-  const book = () => {
-    if (BOOKING_URL) window.open(BOOKING_URL, "_blank", "noopener");
-    else showToast("Terminbuchung folgt in Kürze – schreib uns direkt per WhatsApp oder Formular");
-  };
   const shown = filter === "Alle" ? works : works.filter((w) => w.cat === filter);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -298,8 +293,8 @@ function Index() {
             </ul>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={ghostBtn}><MessageCircle className="h-4 w-4" /> Per WhatsApp schreiben</a>
-              <button type="button" onClick={book} className={ghostBtn}><CalendarDays className="h-4 w-4" /> Erstgespräch buchen</button>
-            </div>
+              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className={ghostBtn}><CalendarDays className="h-4 w-4" /> Erstgespräch buchen</a>
+          </div>
             <Socials className="mt-8" />
           </div>
           <form onSubmit={submit} className="grid gap-4 rounded-3xl glass p-6 sm:grid-cols-2 md:p-8 lg:col-span-3">
