@@ -29,8 +29,7 @@ const PHONE = "+43 660 137157";
 const WHATSAPP_URL = "https://wa.me/4368110376116?text=Hallo%20Vejasra%20Films%2C%20ich%20habe%20eine%20Projektanfrage.";
 const INSTAGRAM_URL = "https://instagram.com/vejasrafilms";
 const BOOKING_URL = "https://cal.com/vejasra-films/15min";
-// TODO: Web3Forms Access Key eintragen (web3forms.com)
-const WEB3FORMS_ACCESS_KEY = "HIER_KEY_EINTRAGEN";
+const WEB3FORMS_ACCESS_KEY = "6abe34bb-7383-496f-9133-df5b9b931fb9";
 
 const nav = [
   ["Referenzen", "#portfolio"], ["Leistungen", "#services"], ["Ablauf", "#ablauf"], ["Über uns", "#about"], ["Kontakt", "#contact"],
