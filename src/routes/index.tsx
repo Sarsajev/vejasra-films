@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import {
   Play, X, Menu, Scissors, Palette, Clapperboard, Sparkles, Film, Layers, Users, SlidersHorizontal,
-  Mail, Phone, MapPin, Instagram, Youtube, Linkedin, Video, ArrowRight,
+  Mail, Phone, MapPin, Instagram, Video, ArrowRight, MessageCircle, CalendarDays,
 } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import music from "@/assets/music.jpg";
@@ -12,16 +12,26 @@ import crew from "@/assets/crew.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "VEJASRA FILMS — Videoproduktion & Post-Produktion" },
-      { name: "description", content: "Full-Service Videoproduktion: Schnitt, Color Grading, Sound Design, Kamera & Ton aus einer Hand." },
-      { property: "og:title", content: "VEJASRA FILMS — Cinematic Visuals & Stories" },
-      { property: "og:description", content: "Schnitt, Color Grading, Sound Design, Kamera & Ton aus einer Hand." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { title: "VEJASRA FILMS | Videoproduktion, Schnitt & Color Grading in Österreich & DACH" },
+      { name: "description", content: "Full-Service Videoproduktion & Post-Produktion aus Österreich. Schnitt, Color Grading, Sound Design & Dreh für Unternehmen, Marken und Artists." },
+      { property: "og:title", content: "VEJASRA FILMS | Videoproduktion, Schnitt & Color Grading in Österreich & DACH" },
+      { property: "og:description", content: "Full-Service Videoproduktion & Post-Produktion aus Österreich. Schnitt, Color Grading, Sound Design & Dreh für Unternehmen, Marken und Artists." },
+      { property: "og:url", content: "https://vejasra-films.com" },
     ],
+    links: [{ rel: "canonical", href: "https://vejasra-films.com" }],
   }),
   component: Index,
 });
+
+// Kontakt & Integrationen
+const EMAIL = "office@vejasra-films.com";
+const PHONE = "+43 660 137157";
+const WHATSAPP_URL = "https://wa.me/4368110376116?text=Hallo%20Vejasra%20Films%2C%20ich%20habe%20eine%20Projektanfrage.";
+const INSTAGRAM_URL = "https://instagram.com/vejasrafilms";
+// TODO: Link zur Terminbuchung (z. B. Calendly) hier eintragen – solange leer, erscheint ein Hinweis.
+const BOOKING_URL = "";
+// TODO: Web3Forms Access Key eintragen (web3forms.com)
+const WEB3FORMS_ACCESS_KEY = "HIER_KEY_EINTRAGEN";
 
 const nav = [
   ["Referenzen", "#portfolio"], ["Leistungen", "#services"], ["Ablauf", "#ablauf"], ["Über uns", "#about"], ["Kontakt", "#contact"],
@@ -63,21 +73,44 @@ function Index() {
   const [filter, setFilter] = useState("Alle");
   const [split, setSplit] = useState(50);
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState("");
+  const [legal, setLegal] = useState<"impressum" | "datenschutz" | null>(null);
+  const [toast, setToast] = useState("");
+  const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(""), 4500); };
+  const book = () => {
+    if (BOOKING_URL) window.open(BOOKING_URL, "_blank", "noopener");
+    else showToast("Terminbuchung folgt in Kürze – schreib uns direkt per WhatsApp oder Formular");
+  };
   const shown = filter === "Alle" ? works : works.filter((w) => w.cat === filter);
 
-  const submit = (e: FormEvent) => { e.preventDefault(); setSent(true); };
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErr("");
+    if (WEB3FORMS_ACCESS_KEY === "HIER_KEY_EINTRAGEN") { setErr("Das Formular ist noch nicht aktiv. Bitte schreib uns per E-Mail oder WhatsApp."); return; }
+    const fd = new FormData(e.currentTarget);
+    fd.append("access_key", WEB3FORMS_ACCESS_KEY);
+    fd.append("subject", "Neue Projektanfrage – VEJASRA FILMS");
+    setSending(true);
+    try {
+      const r = await fetch("https://api.web3forms.com/submit", { method: "POST", body: fd });
+      const j = await r.json();
+      if (j.success) setSent(true); else setErr("Senden fehlgeschlagen. Bitte versuch es erneut oder schreib uns per E-Mail.");
+    } catch { setErr("Senden fehlgeschlagen. Bitte versuch es erneut oder schreib uns per E-Mail."); }
+    setSending(false);
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
       {/* Nav */}
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-white/[0.04] backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
           <a href="#home" className="font-display text-lg font-extrabold tracking-[0.25em]">
             VEJASRA<span className="text-primary"> FILMS</span>
           </a>
           <nav className="hidden gap-8 md:flex">
             {nav.map(([l, h]) => (
-              <a key={h} href={h} className="text-sm text-muted-foreground transition-colors hover:text-primary">{l}</a>
+              <a key={h} href={h} className="text-sm text-muted-foreground transition-colors hover:text-foreground/70">{l}</a>
             ))}
           </nav>
           <a href="#contact" className="hidden rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover hover:glow md:inline-block">
@@ -90,7 +123,7 @@ function Index() {
         {open && (
           <div className="fixed inset-x-0 bottom-0 top-16 z-40 flex h-[calc(100dvh-4rem)] flex-col gap-2 overflow-y-auto bg-background px-6 pb-10 pt-8 md:hidden">
             {nav.map(([l, h]) => (
-              <a key={h} href={h} onClick={() => setOpen(false)} className="border-b border-border py-4 font-display text-2xl font-bold text-foreground transition hover:text-primary">{l}</a>
+              <a key={h} href={h} onClick={() => setOpen(false)} className="border-b border-border py-4 font-display text-2xl font-bold text-foreground transition hover:text-foreground/70">{l}</a>
             ))}
             <a href="#contact" onClick={() => setOpen(false)} className="mt-8 rounded-full bg-primary px-6 py-4 text-center text-lg font-semibold text-primary-foreground hover:bg-primary-hover">Projekt anfragen</a>
           </div>
@@ -109,7 +142,7 @@ function Index() {
             Videoproduktion, Schnitt, Color Grading & Sound Design aus einer Hand – für Unternehmen, Marken und Artists im DACH-Raum.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <button onClick={() => setModal("Showreel 2026")} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-foreground/30 sm:w-auto px-6 py-3 font-semibold transition hover:border-primary hover:text-primary">
+            <button onClick={() => setModal("Showreel 2026")} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-foreground/30 sm:w-auto px-6 py-3 font-semibold transition hover:border-primary hover:text-foreground/70">
               <Play className="h-4 w-4" /> Showreel ansehen
             </button>
             <a href="#contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-primary-hover hover:glow sm:w-auto">
@@ -148,8 +181,8 @@ function Index() {
           <SectionTitle kicker="Leistungen" title="Unsere Expertise" />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {services.map(({ icon: I, t, d }) => (
-              <div key={t} className="group rounded-2xl border border-border bg-card p-7 transition duration-300 hover:-translate-y-1 hover:border-primary/50">
-                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
+              <div key={t} className="group rounded-2xl glass p-7 transition duration-300 hover:-translate-y-1 hover:border-primary/50">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-foreground/70-foreground">
                   <I className="h-6 w-6" />
                 </div>
                 <h3 className="mb-3 whitespace-nowrap text-lg font-bold">{t}</h3>
@@ -166,7 +199,7 @@ function Index() {
           <SectionTitle kicker="Ablauf" title="In 3 Schritten zum fertigen Film" />
           <div className="grid gap-5 md:grid-cols-3">
             {steps.map(([n, t, d]) => (
-              <div key={n} className="rounded-2xl border border-border bg-card p-6">
+              <div key={n} className="rounded-2xl glass p-6">
                 <div className="mb-4 font-display text-3xl font-extrabold text-primary">{n}</div>
                 <h3 className="mb-2 text-lg font-bold">{t}</h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">{d}</p>
@@ -183,7 +216,7 @@ function Index() {
           <div className="mb-10 flex flex-wrap gap-2">
             {cats.map((c) => (
               <button key={c} onClick={() => setFilter(c)}
-                className={`rounded-full border px-4 py-2 text-sm transition ${filter === c ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}>
+                className={`rounded-full border px-4 py-2 text-sm transition ${filter === c ? "border-primary bg-primary text-primary-foreground" : "border-white/10 bg-white/[0.04] backdrop-blur-md text-muted-foreground hover:border-white/30 hover:text-foreground"}`}>
                 {c}
               </button>
             ))}
@@ -194,12 +227,12 @@ function Index() {
                 <div className="relative aspect-video overflow-hidden rounded-2xl border border-border">
                   <img src={w.img} alt={w.title} loading="lazy" width={1280} height={720} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-overlay/30 transition group-hover:bg-overlay/10" />
-                  <span className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-full bg-overlay/60 text-foreground backdrop-blur transition group-hover:bg-primary group-hover:text-primary-foreground">
+                  <span className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-full bg-overlay/60 text-foreground backdrop-blur transition group-hover:bg-primary group-hover:text-foreground/70-foreground">
                     <Play className="ml-0.5 h-5 w-5 fill-current" />
                   </span>
-                  <span className="absolute left-3 top-3 rounded-full bg-overlay/70 px-3 py-1 text-xs backdrop-blur">{w.cat}</span>
+                  <span className="absolute left-3 top-3 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs backdrop-blur-md">{w.cat}</span>
                 </div>
-                <h3 className="mt-4 text-lg font-bold transition group-hover:text-primary">{w.title}</h3>
+                <h3 className="mt-4 text-lg font-bold transition group-hover:text-foreground/70">{w.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{w.svc}</p>
               </button>
             ))}
@@ -259,13 +292,17 @@ function Index() {
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.4em] text-primary">Kontakt</p>
             <h2 className="mb-6 text-3xl font-extrabold md:text-5xl">Lass uns dein Projekt umsetzen.</h2>
             <ul className="space-y-4 text-muted-foreground">
-              <li className="flex items-center gap-3"><Mail className="h-5 w-5 text-primary" /> hello@vejasrafilms.de</li>
-              <li className="flex items-center gap-3"><Phone className="h-5 w-5 text-primary" /> +49 30 1234 5678</li>
+              <li><a href={`mailto:${EMAIL}`} className="flex items-center gap-3 hover:text-foreground"><Mail className="h-5 w-5 shrink-0 text-primary" /> {EMAIL}</a></li>
+              <li><a href={`tel:${PHONE.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-foreground"><Phone className="h-5 w-5 shrink-0 text-primary" /> {PHONE}</a></li>
               <li className="flex items-center gap-3"><MapPin className="h-5 w-5 text-primary" /> Melk, Österreich · DACH-weit</li>
             </ul>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={ghostBtn}><MessageCircle className="h-4 w-4" /> Per WhatsApp schreiben</a>
+              <button type="button" onClick={book} className={ghostBtn}><CalendarDays className="h-4 w-4" /> Erstgespräch buchen</button>
+            </div>
             <Socials className="mt-8" />
           </div>
-          <form onSubmit={submit} className="grid gap-4 rounded-3xl border border-border bg-card p-6 sm:grid-cols-2 md:p-8 lg:col-span-3">
+          <form onSubmit={submit} className="grid gap-4 rounded-3xl glass p-6 sm:grid-cols-2 md:p-8 lg:col-span-3">
             {sent ? (
               <div className="py-16 text-center sm:col-span-2">
                 <h3 className="mb-2 text-2xl font-bold text-primary">Danke!</h3>
@@ -273,20 +310,22 @@ function Index() {
               </div>
             ) : (
               <>
-                <Field label="Name"><input required className={inputCls} /></Field>
-                <Field label="E-Mail"><input required type="email" className={inputCls} /></Field>
+                <Field label="Name"><input name="name" required maxLength={100} className={inputCls} /></Field>
+                <Field label="E-Mail"><input name="email" required type="email" maxLength={255} className={inputCls} /></Field>
+                <Field label="Telefon (optional)"><input name="telefon" type="tel" maxLength={40} className={inputCls} /></Field>
                 <Field label="Projektart">
-                  <select className={inputCls}>
-                    {["Imagefilm", "Commercial", "Schnitt/Grading", "Full Production"].map((o) => <option key={o}>{o}</option>)}
+                  <select name="projektart" className={inputCls}>
+                    {["Imagefilm", "Social Media & Reels", "Musikvideo", "Schnitt & Color Grading", "Full-Service Produktion", "Sonstiges"].map((o) => <option key={o}>{o}</option>)}
                   </select>
                 </Field>
-                <Field label="Budget">
-                  <select className={inputCls}>
-                    {["< 2.500 €", "2.500 – 5.000 €", "5.000 – 15.000 €", "> 15.000 €"].map((o) => <option key={o}>{o}</option>)}
+                <div className="sm:col-span-2"><Field label="Budget (optional)">
+                  <select name="budget" className={inputCls}>
+                    {["Nach Absprache", "Unter 1.500 €", "1.500 – 3.000 €", "3.000 – 7.000 €", "Über 7.000 €"].map((o) => <option key={o}>{o}</option>)}
                   </select>
-                </Field>
-                <div className="sm:col-span-2"><Field label="Nachricht"><textarea required rows={5} className={inputCls} /></Field></div>
-                <button className="rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-primary-hover hover:glow sm:col-span-2">Anfrage senden</button>
+                </Field></div>
+                <div className="sm:col-span-2"><Field label="Nachricht"><textarea name="nachricht" required rows={5} maxLength={3000} className={inputCls} /></Field></div>
+                {err && <p className="text-sm text-destructive sm:col-span-2">{err}</p>}
+                <button disabled={sending} className="disabled:opacity-60 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-primary-hover hover:glow sm:col-span-2">{sending ? "Wird gesendet …" : "Anfrage senden"}</button>
               </>
             )}
           </form>
@@ -297,16 +336,48 @@ function Index() {
       <footer className="border-t border-border px-5 py-10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 text-sm text-muted-foreground md:flex-row">
           <span>© {new Date().getFullYear()} VEJASRA FILMS</span>
-          <div className="flex gap-6"><a href="#" className="hover:text-primary">Impressum</a><a href="#" className="hover:text-primary">Datenschutz</a></div>
+          <div className="flex gap-6"><button onClick={() => setLegal("impressum")} className="hover:text-foreground">Impressum</button><button onClick={() => setLegal("datenschutz")} className="hover:text-foreground">Datenschutz</button></div>
           <Socials />
         </div>
       </footer>
+
+      {legal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay/90 p-4 backdrop-blur-sm animate-in fade-in" onClick={() => setLegal(null)}>
+          <div role="dialog" aria-modal="true" className="relative max-h-[85dvh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-background p-6 text-sm leading-relaxed text-muted-foreground md:p-8" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setLegal(null)} className="absolute right-4 top-4 text-foreground" aria-label="Schließen"><X className="h-6 w-6" /></button>
+            {legal === "impressum" ? (
+              <>
+                <h2 className="mb-5 text-2xl font-extrabold text-foreground">Impressum</h2>
+                <p className="mb-3"><strong className="text-foreground">VEJASRA FILMS</strong> – eine Marke von Wolfsnest e.U.</p>
+                <p>Inhaber: Sayfula Arsajev<br />Linzer Straße 3, 3390 Melk, Österreich</p>
+                <p className="mt-3">E-Mail: <a href={`mailto:${EMAIL}`} className="text-foreground underline">{EMAIL}</a><br />Tel: <a href={`tel:${PHONE.replace(/\s/g, "")}`} className="text-foreground underline">{PHONE}</a></p>
+                <p className="mt-3">Unternehmensgegenstand: Videoproduktion, Post-Produktion & Marketing<br />Mitglied der WKNÖ.</p>
+              </>
+            ) : (
+              <>
+                <h2 className="mb-5 text-2xl font-extrabold text-foreground">Datenschutz</h2>
+                <p className="mb-3"><strong className="text-foreground">Verantwortlicher:</strong> Wolfsnest e.U., Linzer Straße 3, 3390 Melk, Österreich · {EMAIL}</p>
+                <h3 className="mb-1 mt-4 font-bold text-foreground">Kontaktformular & Anfragen</h3>
+                <p>Daten, die du über das Formular, per E-Mail oder WhatsApp übermittelst (Name, E-Mail, optional Telefon, Projektangaben), verarbeiten wir ausschließlich zur Bearbeitung deiner Anfrage (Art. 6 Abs. 1 lit. b DSGVO). Der Formularversand erfolgt über den Dienst Web3Forms. Die Daten werden gelöscht, sobald sie nicht mehr benötigt werden und keine gesetzlichen Aufbewahrungspflichten bestehen.</p>
+                <h3 className="mb-1 mt-4 font-bold text-foreground">Hosting</h3>
+                <p>Beim Aufruf der Website verarbeitet unser Hosting-Anbieter technisch notwendige Daten (z. B. IP-Adresse, Zeitpunkt, Browser) zur sicheren Bereitstellung der Seite (Art. 6 Abs. 1 lit. f DSGVO).</p>
+                <h3 className="mb-1 mt-4 font-bold text-foreground">Deine Rechte</h3>
+                <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Beschwerden kannst du bei der Österreichischen Datenschutzbehörde (dsb.gv.at) einbringen.</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <div role="status" className="fixed inset-x-4 bottom-6 z-[60] mx-auto max-w-md rounded-xl border border-white/10 bg-white/[0.08] px-5 py-4 text-sm text-foreground backdrop-blur-md animate-in fade-in">{toast}</div>
+      )}
 
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay/90 p-4 backdrop-blur-sm animate-in fade-in" onClick={() => setModal(null)}>
           <div className="relative w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setModal(null)} className="absolute -top-12 right-0 text-foreground hover:text-primary" aria-label="Schließen"><X className="h-8 w-8" /></button>
+            <button onClick={() => setModal(null)} className="absolute -top-12 right-0 text-foreground hover:text-foreground/70" aria-label="Schließen"><X className="h-8 w-8" /></button>
             <div className="flex aspect-video flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-card">
               <Video className="h-12 w-12 text-primary" />
               <p className="font-display text-xl font-bold">{modal}</p>
@@ -319,6 +390,7 @@ function Index() {
   );
 }
 
+const ghostBtn = "inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-foreground backdrop-blur-md transition hover:border-white/30 hover:bg-white/[0.08]";
 const inputCls = "w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -335,12 +407,9 @@ function SectionTitle({ kicker, title }: { kicker: string; title: string }) {
 }
 
 function Socials({ className = "" }: { className?: string }) {
-  const s = [[Instagram, "Instagram"], [Video, "Vimeo"], [Youtube, "YouTube"], [Linkedin, "LinkedIn"]] as const;
   return (
     <div className={`flex gap-3 ${className}`}>
-      {s.map(([I, l]) => (
-        <a key={l} href="#" aria-label={l} className="flex h-10 w-10 items-center justify-center rounded-full border border-border transition hover:border-primary hover:text-primary"><I className="h-4 w-4" /></a>
-      ))}
+      <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md transition hover:border-white/30"><Instagram className="h-4 w-4" /></a>
     </div>
   );
 }
