@@ -5,6 +5,7 @@ import {
   Mail, Phone, MapPin, Instagram, Video, ArrowRight, MessageCircle, CalendarDays,
 } from "lucide-react";
 import music from "@/assets/music.jpg";
+import hero from "@/assets/hero.jpg";
 import commercial from "@/assets/commercial.jpg";
 import crew from "@/assets/crew.jpg";
 
