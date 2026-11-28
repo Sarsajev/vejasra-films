@@ -143,14 +143,16 @@ function Index() {
               Projekt starten <ArrowRight className="h-4 w-4" />
             </a>
           </div>
-          <button onClick={() => setModal("Showreel 2026")} className="group relative mt-10 block aspect-video w-full overflow-hidden rounded-3xl border border-border glow">
-            <img src={hero} alt="Showreel Vorschau" width={1920} height={1088} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-fade" />
-            <span className="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-primary-foreground transition group-hover:scale-110 md:h-24 md:w-24">
-              <Play className="ml-1 h-8 w-8 fill-current" />
-            </span>
-            <span className="absolute bottom-5 left-6 text-left text-sm uppercase tracking-[0.3em] text-foreground/80">Showreel 2026 · 2:14</span>
-          </button>
+        <div className="relative mt-10 aspect-video w-full overflow-hidden rounded-3xl border border-border glow bg-black">
+          <iframe
+            className="h-full w-full"
+            src="https://www.youtube-nocookie.com/embed/TAO-a8e03J0?rel=0&modestbranding=1"
+            title="VEJASRA FILMS | Showreel 2026"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            loading="lazy"
+          />
         </div>
       </section>
 
