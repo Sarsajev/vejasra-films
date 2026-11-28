@@ -136,14 +136,14 @@ function Index() {
             Videoproduktion, Schnitt, Color Grading & Sound Design aus einer Hand – für Unternehmen, Marken und Artists im DACH-Raum.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <button onClick={() => setModal("Showreel 2026")} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-foreground/30 sm:w-auto px-6 py-3 font-semibold transition hover:border-primary hover:text-foreground/70">
+            <a href="#showreel" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-foreground/30 sm:w-auto px-6 py-3 font-semibold transition hover:border-primary hover:text-foreground/70">
               <Play className="h-4 w-4" /> Showreel ansehen
-            </button>
+            </a>
             <a href="#contact" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-primary-hover hover:glow sm:w-auto">
               Projekt starten <ArrowRight className="h-4 w-4" />
             </a>
           </div>
-        <div className="relative mt-10 aspect-video w-full overflow-hidden rounded-3xl border border-border glow bg-black">
+        <div id="showreel" className="relative mt-10 aspect-video w-full overflow-hidden rounded-3xl border border-border glow bg-black">
           <iframe
             className="h-full w-full"
             src="https://www.youtube-nocookie.com/embed/TAO-a8e03J0?rel=0&modestbranding=1"
