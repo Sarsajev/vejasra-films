@@ -4,7 +4,6 @@ import {
   Play, X, Menu, Scissors, Palette, Clapperboard, Sparkles, Film, Layers, Users, SlidersHorizontal,
   Mail, Phone, MapPin, Instagram, Video, ArrowRight, MessageCircle, CalendarDays,
 } from "lucide-react";
-import hero from "@/assets/hero.jpg";
 import music from "@/assets/music.jpg";
 import commercial from "@/assets/commercial.jpg";
 import crew from "@/assets/crew.jpg";
