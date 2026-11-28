@@ -153,6 +153,7 @@ function Index() {
             loading="lazy"
           />
         </div>
+      </div>
       </section>
 
       {/* Stats */}
